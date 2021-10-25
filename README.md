@@ -9,7 +9,7 @@ There has been significant changes in this tool. We have updated the back-end to
 
 ## Getting Started
 
-The P300 Unity project was built around the idea of providing a flexible framework for game developers to integrate in the P300 BCI control scheme. To get started, you simply need to add the P300_Unity package to your game. This includes all of the necessary back-end components requried for including a P300 control scheme.
+The P300 Unity project was built around the idea of providing a flexible framework for game developers to integrate in the P300 BCI control scheme. To get started, you simply need to open the P300_unity_tool zip file in Unity. This includes all of the necessary back-end components requried for including a P300 control scheme.
 
 ### Prerequisites
 
