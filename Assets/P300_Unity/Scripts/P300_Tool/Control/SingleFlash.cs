@@ -95,9 +95,14 @@ public class SingleFlash : MonoBehaviour
         p300_Controller.WriteMarker("P300 SingleFlash Started");
         // if we are going to send additional details about the flashing, I think this would be a good time
 
+
+        // 
+        float timeOn = (1f / p300_Controller.freqHz) * p300_Controller.dutyCycle;
+        float timeOff = (1f / p300_Controller.freqHz) * (1f - p300_Controller.dutyCycle);
         int randomCube;
         int lastRandomCube = 99999;
-        string selectionString = " ";
+        string selectionString = "";        // string of selections
+        string markerData;                  // markerData to be printed
         System.Random flashRandom = new System.Random();
         while (startFlashes)
         {
@@ -140,10 +145,10 @@ public class SingleFlash : MonoBehaviour
             //If the counter is non-zero, then flash that cube and decrement the flash counter
             if (flash_counter[randomCube] > 0)
             {
-                // TODO change to off time and ontime
-                yield return new WaitForSecondsRealtime((1f / p300_Controller.freqHz));
+                // Wait timeoff before turning on the stim
+                yield return new WaitForSecondsRealtime(timeOff);
 
-                // Turn the flash on
+                // Wait timeOff seconds before turning on
                 p300_Controller.object_list[randomCube].GetComponent<Renderer>().material.color = p300_Controller.onColour;
 
                 //Handle events if this is the target cube or not //NEW!
@@ -157,21 +162,25 @@ public class SingleFlash : MonoBehaviour
                 }
 
                 flash_counter[randomCube]--;
+                
+                //print("OBJECT: " + randomCube.ToString());
+                // Get marker data
+                markerData = "s," + randomCube.ToString();
                 // Write the selected cube to the console
-                print("OBJECT: " + randomCube.ToString());
+                Debug.Log(markerData);
                 // Write the selected cube to the LSL Outlet stream
-                p300_Controller.WriteMarker("s," + randomCube.ToString());
+                p300_Controller.WriteMarker(markerData);
             }
             if (flash_counter[randomCube] == 0)
             {
                 s_indexes.Remove(randomCube);
             }
 
-            // Wait before turning off
-            yield return new WaitForSecondsRealtime(p300_Controller.dutyCycle);
+            // Wait timeOn seconds before turning off
+            yield return new WaitForSecondsRealtime(timeOn);
 
         }
-        print(selectionString);
+        //print(selectionString);
 
         ResetSingleCounters();
         //Write to LSL stream to indicate end of P300 SingleFlash
@@ -216,7 +225,6 @@ public class SingleFlash : MonoBehaviour
     private int GetRandomFromList(List<int> list, System.Random thisRandom)
     {
         int randomIndex = thisRandom.Next(list.Count);
-        print("random index" + randomIndex.ToString());
         int randomValue = list[randomIndex];
         return randomValue;
     }
