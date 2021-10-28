@@ -11,10 +11,10 @@ public class SingleFlash : MonoBehaviour
 
     //Variables associated with counting the flashes
 
-    private int counter = 0;
+    //private int counter = 0;
     private List<int> flash_counter = new List<int>();
     private List<int> s_indexes = new List<int>();
-    private int numTrials = 0; //CAUTION- THIS MAY BE WHAT IS CAUSING AN ISSUE IF NOT RESET APPROPRIATELY.
+    //private int numTrials = 0; //CAUTION- THIS MAY BE WHAT IS CAUSING AN ISSUE IF NOT RESET APPROPRIATELY.
 
 
 
@@ -23,7 +23,7 @@ public class SingleFlash : MonoBehaviour
         p300_Controller = GetComponent<P300_Controller>();
     }
 
-         
+
     /* Configures array and simulation values for Single flashes */
     public void SetUpSingle()
     {
@@ -39,15 +39,15 @@ public class SingleFlash : MonoBehaviour
         int numRows = p300_Controller.numRows;
         int numCols = p300_Controller.numColumns;
         int numSamples = p300_Controller.numFlashes;
-        
-        
+
+
         //Setting counters for each cube
-        for (int i = 0; i < numRows * numCols; i++)
+        for (int i = 0; i < (numRows * numCols); i++)
         {
             flash_counter.Add(numSamples);
         }
 
-        numTrials = numSamples * (numRows * numCols);
+        //numTrials = numSamples * (numRows * numCols);
         //s_trials = numTrials; //THIS IS USED IN WRITING INFO TO LSL. NEED TO THINK ABOUT HOW TO GET THIS BETTER OUT.
 
         //Set up test single indices
@@ -57,7 +57,7 @@ public class SingleFlash : MonoBehaviour
         }
 
         print("---------- SINGLE FLASH DETAILS ----------");
-        print("Number of Trials will be: " + numTrials);
+        //print("Number of Trials will be: " + numTrials);
         print("Number of flashes for each cell: " + numSamples);
         print("--------------------------------------");
         TurnOffSingle();
@@ -87,30 +87,63 @@ public class SingleFlash : MonoBehaviour
         ResetSingleCounters();
         print("Counters Reset! Hit S again to run P300 SingleFlash");
     }
-    
+
     /* Single Flash Operation */
     IEnumerator SingleFlashCor()
     {
         //Write that this coroutine has started
         p300_Controller.WriteMarker("P300 SingleFlash Started");
+        // if we are going to send additional details about the flashing, I think this would be a good time
 
+        int randomCube;
+        int lastRandomCube = 99999;
+        string selectionString = " ";
+        System.Random flashRandom = new System.Random();
         while (startFlashes)
         {
-            int randomCube;
-            int randomIndex;
-            //Generate a random number from the list of indices that have non-zero counters
-            System.Random random = new System.Random();
-            randomIndex = random.Next(s_indexes.Count);
-            randomCube = s_indexes[randomIndex];
-
             //Turn off the cubes to give the flashing image
             TurnOffSingle();
+
+            // If there are no more cubes to select, then quit
+            if (s_indexes.Count < 1)
+            {
+                // Print the single flash ends to console
+                print("Done P300 Single Flash Trials");
+                // 
+                p300_Controller.WriteMarker("P300 SingleFlash Ends");
+                break;
+            }
+            // If there is only one cube to select, you must select that one
+            else if (s_indexes.Count == 1)
+            {
+                randomCube = s_indexes[0];
+            }
+            // Otherwise get select a random cube to flash
+            else
+            {
+                randomCube = GetRandomFromList(s_indexes, flashRandom);
+            }
+            // If it is the same cube that just flashed, select a different random cube
+            if (randomCube == lastRandomCube && s_indexes.Count != 1)
+            {
+                while (randomCube == lastRandomCube)
+                {
+                    randomCube = GetRandomFromList(s_indexes, flashRandom);
+                }
+            }
+            // Reset the most recently selected cube
+            lastRandomCube = randomCube;
+
+            // debug
+            selectionString = selectionString + randomCube.ToString();
 
             //If the counter is non-zero, then flash that cube and decrement the flash counter
             if (flash_counter[randomCube] > 0)
             {
+                // TODO change to off time and ontime
                 yield return new WaitForSecondsRealtime((1f / p300_Controller.freqHz));
 
+                // Turn the flash on
                 p300_Controller.object_list[randomCube].GetComponent<Renderer>().material.color = p300_Controller.onColour;
 
                 //Handle events if this is the target cube or not //NEW!
@@ -123,34 +156,23 @@ public class SingleFlash : MonoBehaviour
                     OnNonTargetFlash();
                 }
 
-
                 flash_counter[randomCube]--;
-                counter++;
+                // Write the selected cube to the console
                 print("OBJECT: " + randomCube.ToString());
-
-                //Write to the LSL Outlet stream
+                // Write the selected cube to the LSL Outlet stream
                 p300_Controller.WriteMarker("s," + randomCube.ToString());
             }
-            else if (numTrials == counter)
+            if (flash_counter[randomCube] == 0)
             {
-                print("Done P300 Single Flash Trials");
-                break;
-            }
-            else
-            {
-                //If the counter for a specific cube has reached zero, then remove it from the indexes so that the random
-                //number generator does not pick it again (to reduce lag)
-                if (flash_counter[randomCube] == 0)
-                {
-                    s_indexes.RemoveAt(randomIndex);
-                }
-                //Go to the next iteration of the single flash 
-                continue;
+                s_indexes.Remove(randomCube);
             }
 
+            // Wait before turning off
             yield return new WaitForSecondsRealtime(p300_Controller.dutyCycle);
 
         }
+        print(selectionString);
+
         ResetSingleCounters();
         //Write to LSL stream to indicate end of P300 SingleFlash
         //This is all things to do on the P300 controller.
@@ -172,10 +194,10 @@ public class SingleFlash : MonoBehaviour
     /* Resets all counters and clear arrays */
     public void ResetSingleCounters()
     {
-        counter = 0;
+        //counter = 0;
         flash_counter.Clear();
         s_indexes.Clear();
-        numTrials = 0;
+        //numTrials = 0;
     }
 
 
@@ -183,15 +205,22 @@ public class SingleFlash : MonoBehaviour
 
     public void Redraw()
     {
-            print("Redrawing Matrix");
-            TurnOffSingle();
-            ResetSingleCounters();
-            p300_Controller.object_list.Clear();
-            SetUpSingle();
-       
+        print("Redrawing Matrix");
+        TurnOffSingle();
+        ResetSingleCounters();
+        p300_Controller.object_list.Clear();
+        SetUpSingle();
+
     }
 
- 
+    private int GetRandomFromList(List<int> list, System.Random thisRandom)
+    {
+        int randomIndex = thisRandom.Next(list.Count);
+        print("random index" + randomIndex.ToString());
+        int randomValue = list[randomIndex];
+        return randomValue;
+    }
+
 
     //Dealing with events
     private void OnTargetFlash()
