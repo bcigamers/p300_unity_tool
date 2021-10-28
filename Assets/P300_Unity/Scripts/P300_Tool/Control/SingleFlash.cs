@@ -86,12 +86,13 @@ public class SingleFlash : MonoBehaviour
     }
 
     /* Single Flash Operation */
-    IEnumerator SingleFlashCor()
+    public IEnumerator SingleFlashCor()
     {
         //Write that this coroutine has started
         p300_Controller.WriteMarker("P300 SingleFlash Started");
         // if we are going to send additional details about the flashing, I think this would be a good time
 
+        int targetId = p300_Controller.TargetObjectID;
 
         // Get the timeOn and timeOff from the flash frequncy and duty cycle
         float timeOn = (1f / p300_Controller.freqHz) * p300_Controller.dutyCycle;
@@ -163,7 +164,7 @@ public class SingleFlash : MonoBehaviour
                 
                 //print("OBJECT: " + randomCube.ToString());
                 // Get marker data
-                markerData = "s," + randomCube.ToString();
+                markerData = "s," + randomCube.ToString() + "," + targetId.ToString();
                 
                 // Write the selected cube to the console
                 Debug.Log(markerData);

@@ -64,6 +64,7 @@ public class P300_Controller : MonoBehaviour
     public bool SendLiveInfo;   //This determines whether or not to send live information about the set-up to LSL.
     public int TargetObjectID;  //This can be used to select a 'target' object for individuals to focus on, using the given int ID.
     public int trainingLength;  //Number of training selections to complete
+    public float trainBreak;    //Time in seconds between training trials
 
     //Variables for the Boxes
     /* Grid is mapped out as follows:
@@ -212,9 +213,9 @@ public class P300_Controller : MonoBehaviour
         setup.Recolour(object_list,offColour);
     }
 
-    public void RunSingleFlash(int targetCube = 0)
+    public void RunSingleFlash()
     {
-        print("running singleflash training on target " + targetCube.ToString());
+        //print("running singleflash training on target " + targetCube.ToString());
         singleFlash.SetUpSingle();
         singleFlash.SingleFlashes();
     }
@@ -291,6 +292,9 @@ public class P300_Controller : MonoBehaviour
         GameObject[,] objectList = setup.SetUpMatrix(object_list);
         GameObject trainingCube;
 
+        // Get singleflash ready
+        RunSingleFlash();
+
         for (int i = 0; i < trainingLength; i++)
         {
             // Select random cube to train on
@@ -307,15 +311,21 @@ public class P300_Controller : MonoBehaviour
             GameObject trainTarget = Instantiate(myObject);
             trainTarget.transform.localScale = new Vector3(1.2f, 1.2f, 1.2f);
             trainTarget.transform.position = new Vector3(0, 0, 2) + trainingCube.transform.position;
-            
+
+            //
+            TargetObjectID = trainingIndex;
+
 
             // Run SingleFlash
-
+            print("starting singleflash");
+            RunSingleFlash();
+            //singleFlash.startFlashes = true;
+            //singleFlash.SingleFlashes();
 
             // RunSingleFlash(trainingIndex);
 
             // Wait for response saying that singleflash is complete
-            float timeToTrain = 10;
+            float timeToTrain = numRows *  numColumns * numFlashes * (1f / freqHz) + trainBreak;
             yield return new WaitForSecondsRealtime(timeToTrain);
             
             // Destroy the train target
