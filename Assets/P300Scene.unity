@@ -399,9 +399,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   refreshRate: 144
-  freqHz: 5
+  freqHz: 1
   dutyCycle: 0.25
-  numFlashes: 3
+  numFlashes: 5
   startX: 0
   startY: 0
   startZ: 0
@@ -414,6 +414,7 @@ MonoBehaviour:
   offColour: {r: 0, g: 0.04705883, b: 1, a: 0}
   SendLiveInfo: 0
   TargetObjectID: 0
+  trainingLength: 5
   object_list: []
   setup: {fileID: 1145849759}
   singleFlash: {fileID: 1145849758}

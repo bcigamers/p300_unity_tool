@@ -63,6 +63,7 @@ public class P300_Controller : MonoBehaviour
     public Color offColour;     //Color when not flashing of the object.
     public bool SendLiveInfo;   //This determines whether or not to send live information about the set-up to LSL.
     public int TargetObjectID;  //This can be used to select a 'target' object for individuals to focus on, using the given int ID.
+    public int trainingLength;  //Number of training selections to complete
 
     //Variables for the Boxes
     /* Grid is mapped out as follows:
@@ -120,6 +121,7 @@ public class P300_Controller : MonoBehaviour
         //Setting up Keys, to lock other keys when one simulation is being run
         keyLocks.Add(KeyCode.S, false);
         keyLocks.Add(KeyCode.D, false);
+        keyLocks.Add(KeyCode.T, false);
         locked_keys = false;
 
         //Starting with sending the live information as false.
@@ -163,6 +165,12 @@ public class P300_Controller : MonoBehaviour
             Debug.Log("Single Flash worked!");
         }
 
+        // Do Training
+        if(Input.GetKeyDown(KeyCode.T))
+        {
+            StartCoroutine(DoTraining());
+        }
+
         //Resolve new streams - This is just if you need to refresh the streams.
         if (Input.GetKeyDown(KeyCode.F4))
         {
@@ -204,8 +212,9 @@ public class P300_Controller : MonoBehaviour
         setup.Recolour(object_list,offColour);
     }
 
-    public void RunSingleFlash()
+    public void RunSingleFlash(int targetCube = 0)
     {
+        print("running singleflash training on target " + targetCube.ToString());
         singleFlash.SetUpSingle();
         singleFlash.SingleFlashes();
     }
@@ -275,6 +284,48 @@ public class P300_Controller : MonoBehaviour
         locked_keys = !locked_keys;
     }
 
+    // Do Training
+    public IEnumerator  DoTraining()
+    {
+        System.Random trainRandom = new System.Random();
+        GameObject[,] objectList = setup.SetUpMatrix(object_list);
+        GameObject trainingCube;
 
+        for (int i = 0; i < trainingLength; i++)
+        {
+            // Select random cube to train on
+            int trainingIndex = trainRandom.Next((numRows * numColumns));
+
+            print("Running training session " + i.ToString() + " on cube " + trainingIndex.ToString());
+            // Training goes here
+
+            // Put a slightly larger cube just behind the training cube as a target
+            int x = trainingIndex % numColumns;
+            int y = (trainingIndex - x) / numColumns;
+            trainingCube = objectList[x,y];
+
+            GameObject trainTarget = Instantiate(myObject);
+            trainTarget.transform.localScale = new Vector3(1.2f, 1.2f, 1.2f);
+            trainTarget.transform.position = new Vector3(0, 0, 2) + trainingCube.transform.position;
+            
+
+            // Run SingleFlash
+
+
+            // RunSingleFlash(trainingIndex);
+
+            // Wait for response saying that singleflash is complete
+            float timeToTrain = 10;
+            yield return new WaitForSecondsRealtime(timeToTrain);
+            
+            // Destroy the train target
+            Destroy(trainTarget);
+
+
+            print("Training session " + i.ToString() + " complete");
+
+        }
+        //RunSingleFlash()
+    }
 
 }

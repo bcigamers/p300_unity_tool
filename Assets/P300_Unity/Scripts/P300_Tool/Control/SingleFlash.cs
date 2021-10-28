@@ -47,9 +47,6 @@ public class SingleFlash : MonoBehaviour
             flash_counter.Add(numSamples);
         }
 
-        //numTrials = numSamples * (numRows * numCols);
-        //s_trials = numTrials; //THIS IS USED IN WRITING INFO TO LSL. NEED TO THINK ABOUT HOW TO GET THIS BETTER OUT.
-
         //Set up test single indices
         for (int i = 0; i < (numRows * numCols); i++)
         {
@@ -96,12 +93,13 @@ public class SingleFlash : MonoBehaviour
         // if we are going to send additional details about the flashing, I think this would be a good time
 
 
-        // 
+        // Get the timeOn and timeOff from the flash frequncy and duty cycle
         float timeOn = (1f / p300_Controller.freqHz) * p300_Controller.dutyCycle;
         float timeOff = (1f / p300_Controller.freqHz) * (1f - p300_Controller.dutyCycle);
+        
         int randomCube;
         int lastRandomCube = 99999;
-        string selectionString = "";        // string of selections
+        string selectionString = "";        // string of selections for debuging
         string markerData;                  // markerData to be printed
         System.Random flashRandom = new System.Random();
         while (startFlashes)
@@ -166,6 +164,7 @@ public class SingleFlash : MonoBehaviour
                 //print("OBJECT: " + randomCube.ToString());
                 // Get marker data
                 markerData = "s," + randomCube.ToString();
+                
                 // Write the selected cube to the console
                 Debug.Log(markerData);
                 // Write the selected cube to the LSL Outlet stream
@@ -222,6 +221,7 @@ public class SingleFlash : MonoBehaviour
 
     }
 
+    // Get a random value from a list, input the list and a random object
     private int GetRandomFromList(List<int> list, System.Random thisRandom)
     {
         int randomIndex = thisRandom.Next(list.Count);
