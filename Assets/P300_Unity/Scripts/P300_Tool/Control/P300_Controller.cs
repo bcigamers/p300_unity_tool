@@ -293,8 +293,9 @@ public class P300_Controller : MonoBehaviour
         GameObject trainingCube;
 
         // Get singleflash ready
-        RunSingleFlash();
+        //RunSingleFlash();
 
+        
         for (int i = 0; i < trainingLength; i++)
         {
             // Select random cube to train on
@@ -319,13 +320,16 @@ public class P300_Controller : MonoBehaviour
             // Run SingleFlash
             print("starting singleflash");
             RunSingleFlash();
+            yield return new WaitForSecondsRealtime(trainBreak);
+            RunSingleFlash();
             //singleFlash.startFlashes = true;
             //singleFlash.SingleFlashes();
 
             // RunSingleFlash(trainingIndex);
 
             // Wait for response saying that singleflash is complete
-            float timeToTrain = numRows *  numColumns * numFlashes * (1f / freqHz) + trainBreak;
+            float timeToTrain = numRows *  numColumns * numFlashes * (1f / freqHz);// + trainBreak???
+
             yield return new WaitForSecondsRealtime(timeToTrain);
             
             // Destroy the train target
@@ -334,8 +338,13 @@ public class P300_Controller : MonoBehaviour
 
             print("Training session " + i.ToString() + " complete");
 
+            // 
+            //StopSingleFlashes();
+
         }
-        //RunSingleFlash()
+        print("Training complete");
+        WriteMarker("Training Complete");
     }
+    
 
 }

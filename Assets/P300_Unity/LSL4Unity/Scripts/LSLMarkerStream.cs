@@ -56,7 +56,7 @@ namespace Assets.LSL4Unity.Scripts
             sample[0] = marker;
             lslOutlet.push_sample(sample);
         }
-
+        /*
         public void Write(string marker, double customTimeStamp)
         {
             sample[0] = marker;
@@ -68,6 +68,7 @@ namespace Assets.LSL4Unity.Scripts
             sample[0] = marker;
             lslOutlet.push_sample(sample, customTimeStamp);
         }
+        */
 
         public void WriteBeforeFrameIsDisplayed(string marker)
         {
