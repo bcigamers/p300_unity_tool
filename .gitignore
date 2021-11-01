@@ -1,0 +1,44 @@
+# OS auto-generated files
+.DS_Store
+*.db
+
+# Unity3D auto-generated folders
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Uu]nityGenerated/
+/[Ll]ocal[Cc]ache/
+
+# Auto-generated Visual Studio or MonoDevelop solution and project files
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.apk
+*.cd
+.consulo/
+*.svd
+*.pdb
+*.opendb
+
+# Visual Studio cache directory
+.vs/
+
+# Unity3D generated meta files
+*.pidb.meta
+*.pdb.meta
+
+# Unity3D Generated File On Crash Reports
+sysinfo.txt
+
+# Builds
+*.apk
+*.exe
+*.unitypackage
