@@ -103,11 +103,13 @@ public class P300_Controller : MonoBehaviour
     //Other Scripts to Connect
     [SerializeField] Setup_P300 setup;
     [SerializeField] SingleFlash singleFlash;
+    [SerializeField] RunPython runPython;
 
     private void Awake()
     {
         setup = GetComponent<Setup_P300>();
         singleFlash = GetComponent<SingleFlash>();
+        runPython = GetComponent<RunPython>();
     }
 
     private void Start()
@@ -147,6 +149,9 @@ public class P300_Controller : MonoBehaviour
         //TurnOff();
         //System.Threading.Thread.Sleep(2000);
         SendInfo();
+
+        //Run Python
+        //runPython.RunP300Python();
     }
 
 
