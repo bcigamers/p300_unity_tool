@@ -17,8 +17,6 @@ public class RunPython : MonoBehaviour
     private int dailyFileCount;
     public string fileName;
 
-    public 
-
     // 
     private float window_start;
     private float window_end;
@@ -65,7 +63,7 @@ public class RunPython : MonoBehaviour
         cmd.StandardInput.WriteLine("conda activate bci_online");
         cmd.StandardInput.WriteLine("python --version");
         cmd.StandardInput.WriteLine("conda --version");
-        cmd.StandardInput.WriteLine("python erp_online_test.py"); // this is going to std out in the future with file saving happening within python
+        cmd.StandardInput.WriteLine("python erp_online_test.py");
 
         cmd.StandardInput.Flush();
         cmd.StandardInput.Close();
