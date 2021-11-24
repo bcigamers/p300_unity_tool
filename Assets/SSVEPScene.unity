@@ -339,19 +339,17 @@ MonoBehaviour:
   offColour: {r: 0, g: 0, b: 0, a: 0}
   SendLiveInfo: 0
   TargetObjectID: 0
-  trainingLength: 4
+  numTrainingSelections: 9
+  numTrainingWindows: 5
+  windowLength: 1.4
   trainBreak: 1
   setFreqFlash:
-  - 8
   - 10
   - 12
+  - 15
   realFreqFlash: []
   objectList: []
   refreshRate: 60
-  stim_freq: 10
-  windowLength: 1
-  markersPerSelection: 5
-  trainLength: 0
   cube: {fileID: 1492749076}
   setup: {fileID: 1256698347}
 --- !u!114 &1256698350

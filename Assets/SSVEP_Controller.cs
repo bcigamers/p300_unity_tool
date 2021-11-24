@@ -61,7 +61,9 @@ public class SSVEP_Controller : MonoBehaviour
     public Color offColour;     //Color when not flashing of the object.
     public bool SendLiveInfo;   //This determines whether or not to send live information about the set-up to LSL.
     public int TargetObjectID;  //This can be used to select a 'target' object for individuals to focus on, using the given int ID.
-    public int trainingLength;  //Number of training selections to complete
+    public int numTrainingSelections;  //Number of training selections to complete
+    public int numTrainingWindows;//Number of markers to send per selection
+    public float windowLength;  //Length of training windows
     public float trainBreak;    //Time in seconds between training trials
 
     public float[] setFreqFlash;    //frequency of flashes (in Hz) set by the user
@@ -103,10 +105,10 @@ public class SSVEP_Controller : MonoBehaviour
 
     // SSVEP vars
     public int refreshRate = 60;
-    public int stim_freq = 10;
-    public float windowLength = 1.0F;
-    public int markersPerSelection = 5;
-    public int trainLength;
+    //public int stim_freq = 10;
+    
+    //public int markersPerSelection = 5;
+    //public int trainLength;
     private int trainLabel;
     private float period;
     private int ISI_count = 0;
@@ -325,7 +327,7 @@ public class SSVEP_Controller : MonoBehaviour
         //Get an initial value for the training index
         int trainingIndex = trainRandom.Next((numRows * numColumns));
 
-        for (int i = 0; i < trainingLength; i++)
+        for (int i = 0; i < numTrainingSelections; i++)
         {
             // Select random cube to train on that is not the same as the last cube
 
@@ -370,7 +372,7 @@ public class SSVEP_Controller : MonoBehaviour
             // RunSingleFlash(trainingIndex);
 
             // Wait for response saying that singleflash is complete
-            float timeToTrain = (float)trainingLength * windowLength;// + trainBreak???
+            float timeToTrain = (float)numTrainingWindows * windowLength;// + trainBreak???
 
             marker.Write("Trial Started");
             yield return new WaitForSecondsRealtime(timeToTrain);
