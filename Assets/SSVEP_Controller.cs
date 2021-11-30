@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using System.Linq;
 using Assets.LSL4Unity.Scripts;
 
 /*
@@ -217,14 +218,13 @@ public class SSVEP_Controller : MonoBehaviour
 
     private void Update()
     {
+        ISI_count++;
         // Add duty cycle
         // Generate the flashing
         for (int i = 0; i < objectList.Count; i++)
         {
-            ISI_count++;
             if (flashing == true)
             {
-
                 frame_count[i]++;
                 if (frames_on[i] == 1)
                 {
@@ -250,7 +250,7 @@ public class SSVEP_Controller : MonoBehaviour
         }
 
         // so jank, but this sends the markers 
-        if (ISI_count >= refreshRate)
+        if (ISI_count >= refreshRate * windowLength)
         {
             if (flashing == true)
             {
@@ -323,20 +323,28 @@ public class SSVEP_Controller : MonoBehaviour
 
         // set training to true
         training = true;
+        int trainingIndex;
 
-        //Get an initial value for the training index
-        int trainingIndex = trainRandom.Next((numRows * numColumns));
+        // Create training array
+        int[] unshuffledTrainArray = new int[numTrainingSelections];
+        for (int k = 0; k < numTrainingSelections; k++)
+        {
+            if (k >= objectList.Count())
+            {
+                unshuffledTrainArray[k] = k % objectList.Count();
+            }
+            else
+            {
+                unshuffledTrainArray[k] = k;
+            }
+        }
+
+        System.Random randomShuffle = new System.Random();
+        int[] shuffledTrainArray = unshuffledTrainArray.OrderBy(x => randomShuffle.Next()).ToArray();
 
         for (int i = 0; i < numTrainingSelections; i++)
         {
-            // Select random cube to train on that is not the same as the last cube
-
-            int a = trainingIndex;
-            while (a == trainingIndex)
-            {
-                a = trainRandom.Next((numRows * numColumns));
-            }
-            trainingIndex = a;
+            trainingIndex = shuffledTrainArray[i];
 
             print("Running training session " + i.ToString() + " on cube " + trainingIndex.ToString());
 
@@ -392,6 +400,108 @@ public class SSVEP_Controller : MonoBehaviour
             //StopSingleFlashes();
 
         }
+
+        ////Make a list of indices that have been used, so that each target is selected before others are repeated
+        //int[] trainingIndices = new int[objectList.Count()];
+        //for (int i = 0; i < numTrainingSelections; i++)
+        //{
+        //    trainingIndices[i] = 0;
+        //}
+
+        ////Get an initial value for the training index
+        //int trainingIndex = trainRandom.Next((numRows * numColumns));
+        //int lastTrainingIndex = 0;
+        //trainingIndices[trainingIndex] = trainingIndex;
+
+        ////int numTrainingArrays = Math.Ceiling(numTrainingSelections / objectList.Count());
+
+
+        //for (int i = 0; i < numTrainingSelections; i++)
+        //{
+        //    // If each target has been selected once, reset target indices to 0
+        //    if (!trainingIndices.Contains(0))
+        //    {
+        //        for (int j = 0; j < numTrainingSelections; i++)
+        //        {
+        //            trainingIndices[j] = 0;
+        //        }
+        //        do
+        //        {
+        //            trainingIndex = trainRandom.Next((numRows * numColumns));
+        //        }
+        //        while (trainingIndex == lastTrainingIndex);
+        //    }
+        //    print("training index:" + trainingIndex.ToString());
+        //    print("training indices: ");
+        //    for (int k = 0; k < numTrainingSelections; i++)
+        //    {
+        //        print(trainingIndices[k].ToString());
+        //    }
+        //    // get a new training index that is not in the list of training indices
+        //    do
+        //    {
+        //        trainingIndex = trainRandom.Next((numRows * numColumns));
+        //        print(trainingIndex.ToString());
+        //    }
+        //    while (trainingIndices.Contains(trainingIndex));
+
+        //    lastTrainingIndex = trainingIndex;
+        //    trainingIndices[trainingIndex] = trainingIndex;
+
+        //    print("Running training session " + i.ToString() + " on cube " + trainingIndex.ToString());
+
+        //    // Training goes here
+
+        //    // Put a slightly larger cube just behind the training cube as a target
+        //    //int x = trainingIndex % numColumns;
+        //    //int y = (trainingIndex - x) / numColumns;
+        //    trainingCube = objectList[trainingIndex];
+
+        //    GameObject trainTarget = Instantiate(myObject);
+        //    trainTarget.transform.localScale = new Vector3(1.2f, 1.2f, 1.2f);
+        //    trainTarget.transform.position = new Vector3(0, 0, 2) + trainingCube.transform.position;
+
+        //    //
+        //    TargetObjectID = trainingIndex;
+
+
+        //    // Run SingleFlash
+        //    print("starting ");
+        //    //RunSingleFlash();
+        //    yield return new WaitForSecondsRealtime(trainBreak);
+
+        //    trainLabel = trainingIndex;
+        //    flashing = true;
+
+
+
+        //    //RunSingleFlash();
+        //    //singleFlash.startFlashes = true;
+        //    //singleFlash.SingleFlashes();
+
+        //    // RunSingleFlash(trainingIndex);
+
+        //    // Wait for response saying that singleflash is complete
+        //    float timeToTrain = (float)numTrainingWindows * windowLength;// + trainBreak???
+
+        //    marker.Write("Trial Started");
+        //    yield return new WaitForSecondsRealtime(timeToTrain);
+        //    marker.Write("Trial Ends");
+
+        //    // Turn off flashing
+        //    flashing = false;
+        //    ResetCubeColour();
+
+        //    // Destroy the train target
+        //    Destroy(trainTarget);
+
+
+        //    print("Training session " + i.ToString() + " complete");
+
+        //    // 
+        //    //StopSingleFlashes();
+
+        //}
         print("Training complete");
         WriteMarker("Training Complete");
 
