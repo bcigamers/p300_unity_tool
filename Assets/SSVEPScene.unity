@@ -298,7 +298,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2ae6c430a9d9ba40ae950a4fbb21683, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  refreshRate: 60
+  refreshRate: 120
   sSVEP_Controller: {fileID: 1256698349}
 --- !u!4 &1256698348
 Transform:
@@ -330,7 +330,7 @@ MonoBehaviour:
   startX: 0
   startY: 0
   startZ: 0
-  distanceX: 4
+  distanceX: 2
   distanceY: 2
   myObject: {fileID: 1492749076}
   numRows: 1
@@ -340,8 +340,8 @@ MonoBehaviour:
   SendLiveInfo: 0
   TargetObjectID: 0
   numTrainingSelections: 3
-  numTrainingWindows: 20
-  windowLength: 1.4
+  numTrainingWindows: 3
+  windowLength: 1
   trainBreak: 3
   setFreqFlash:
   - 10

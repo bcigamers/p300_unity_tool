@@ -65,6 +65,7 @@ public class SSVEP_Controller : MonoBehaviour
     public int numTrainingSelections;  //Number of training selections to complete
     public int numTrainingWindows;//Number of markers to send per selection
     public float windowLength;  //Length of training windows
+    //public float windowOverlapRatio; //Ratio of overlap in the signal, 0 is non overlapping, 1 is 
     public float trainBreak;    //Time in seconds between training trials
 
     public float[] setFreqFlash;    //frequency of flashes (in Hz) set by the user
